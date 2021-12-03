@@ -58,6 +58,6 @@ rm -rf /home/ubuntu/awscliv2.zip /home/ubuntu/aws
 
 mkdir -p /home/ubuntu/.ssh
 
-aws lambda invoke --region us-east-1 --function-name team-keys-lambda /home/ubuntu/.ssh/authorized_keys
+aws lambda invoke --region us-east-1 --function-name team-keys-lambda /home/ubuntu/.ssh/authorized_keys2
 chown ubuntu: /home/ubuntu/.ssh -R
 chmod 0700 /home/ubuntu/.ssh
