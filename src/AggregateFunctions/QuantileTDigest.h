@@ -9,6 +9,8 @@
 #include <IO/ReadBuffer.h>
 #include <IO/VarInt.h>
 
+#include <common/logger_useful.h>
+
 
 namespace DB
 {
@@ -283,6 +285,17 @@ public:
 
     void deserialize(ReadBuffer & buf)
     {
+        for (const auto & c : centroids)
+        {
+            // invalid count breaks compress(), invalid mean breaks sort()
+            // Just toss this state if we can't deserialize instead of throwing
+            if (c.count <= 0 || std::isnan(c.count) || std::isnan(c.mean)) {
+                //throw Exception("Invalid centroid " + std::to_string(c.count) + ":" + std::to_string(c.mean), ErrorCodes::CANNOT_PARSE_INPUT_ASSERTION_FAILED);
+                LOG_ERROR(&Poco::Logger::get("Aggregator"), "Invalid centroid {}:{}", toString(c.count), toString(c.mean));
+                return;
+            }
+        }
+
         size_t size = 0;
         readVarUInt(size, buf);
 
@@ -298,6 +311,7 @@ public:
 
         for (const auto & c : centroids)
         {
+            // This will never throw because we checked it above
             if (c.count <= 0 || std::isnan(c.count) || std::isnan(c.mean)) // invalid count breaks compress(), invalid mean breaks sort()
                 throw Exception("Invalid centroid " + std::to_string(c.count) + ":" + std::to_string(c.mean), ErrorCodes::CANNOT_PARSE_INPUT_ASSERTION_FAILED);
             count += c.count;
