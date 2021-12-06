@@ -56,8 +56,10 @@ unzip awscliv2.zip
 
 rm -rf /home/ubuntu/awscliv2.zip /home/ubuntu/aws
 
+# SSH keys of core team
 mkdir -p /home/ubuntu/.ssh
 
-aws lambda invoke --region us-east-1 --function-name team-keys-lambda /home/ubuntu/.ssh/authorized_keys2
+# ~/.ssh/authorized_keys and ~/.ssh/authorized_keys2 are cleaned out, so we'll put them near
+aws lambda invoke --region us-east-1 --function-name team-keys-lambda /home/ubuntu/.ssh/core_team_authorized_keys
 chown ubuntu: /home/ubuntu/.ssh -R
 chmod 0700 /home/ubuntu/.ssh
